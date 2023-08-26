@@ -6,7 +6,10 @@ buildscript {
 
 dependencies {
     implementation libs.springCloudEurekaClient
+    implementation libs.springBootStarterDataJpa
+    implementation "org.postgresql:postgresql:42.6.0"
     implementation 'io.jsonwebtoken:jjwt-api:0.11.1'
     runtimeOnly 'io.jsonwebtoken:jjwt-impl:0.11.1'
     runtimeOnly 'io.jsonwebtoken:jjwt-jackson:0.11.1'
+    implementation 'org.mindrot:jbcrypt:0.4'
 }

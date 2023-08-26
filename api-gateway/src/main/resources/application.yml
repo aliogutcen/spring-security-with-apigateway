@@ -9,12 +9,10 @@ spring:
     allow-bean-definition-overriding: true
   cloud:
     gateway:
-      routes:
-        - id: auth-service
-          uri:
-            lb://AUTH-SERVICE
-          predicates:
-            - Path= /auth/**
+      discovery:
+        locator:
+          enabled: true
+
 
 
 
