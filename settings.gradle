@@ -1,0 +1,5 @@
+rootProject.name = 'merchstore'
+include 'eureka-server'
+include 'auth-service'
+include 'api-gateway'
+
