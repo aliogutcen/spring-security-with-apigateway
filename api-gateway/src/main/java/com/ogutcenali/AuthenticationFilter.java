@@ -1,8 +1,5 @@
 package com.ogutcenali;
 
-
-
-import com.google.common.net.HttpHeaders;
 import io.jsonwebtoken.Claims;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cloud.context.config.annotation.RefreshScope;
