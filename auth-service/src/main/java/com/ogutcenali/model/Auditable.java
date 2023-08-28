@@ -1,5 +1,6 @@
 package com.ogutcenali.model;
 
+import com.ogutcenali.model.enums.ERole;
 import jakarta.persistence.Column;
 import jakarta.persistence.EntityListeners;
 import jakarta.persistence.MappedSuperclass;
@@ -20,16 +21,21 @@ import java.time.LocalDateTime;
 public abstract class Auditable {
 
     @CreatedBy
-    protected String createdBy;
+    protected ERole createdBy;
 
     @CreatedDate
     @Column(nullable = false, updatable = false)
     protected LocalDateTime createdDate;
 
     @LastModifiedBy
-    protected String lastModifiedBy;
+    protected ERole lastModifiedBy;
 
     @LastModifiedDate
     protected LocalDateTime lastModifiedDate;
+
+    @LastModifiedDate
+    protected LocalDateTime lastAccessDate;
+
+
 
 }

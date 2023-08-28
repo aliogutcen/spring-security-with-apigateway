@@ -1,8 +1,11 @@
 package com.ogutcenali.model;
 
+import com.ogutcenali.model.enums.ERole;
 import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
+
+import java.time.LocalDateTime;
 
 @Data
 @SuperBuilder
@@ -11,7 +14,7 @@ import lombok.experimental.SuperBuilder;
 @ToString
 @Entity
 @Table(name = "auth-serive")
-public class Auth extends Auditable{
+public class Auth extends Auditable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -21,7 +24,14 @@ public class Auth extends Auditable{
 
     private String password;
 
-    private String roles;
+    @Enumerated(EnumType.STRING)
+    private ERole roles;
+
+    private boolean isAccountNonLocked;
+
+    private boolean isAccountNonExpired;
+
+    private boolean isEnabled;
 
 
 }

@@ -4,7 +4,18 @@ server:
 spring:
   application:
     name: auth-service
-
+  datasource:
+    driver-class-name: org.postgresql.Driver
+    url: jdbc:postgresql://localhost:5432/ecommerceauth
+    username: postgres
+    password: 1234
+  jpa:
+    hibernate:
+      ddl-auto: create-drop
+    show-sql: true
+    properties:
+      hibernate:
+        format_sql: true
 eureka:
   client:
     service-url:
@@ -14,3 +25,4 @@ eureka:
 
 jwt:
   secret: BvPHGM8C0ia4uOuxxqPD5DTbWC9F9TWvPStp3pb7ARo0oK2mJ3pd3YG4lxA9i8bj6OTbadwezxgeEByY
+  expiration: 86400

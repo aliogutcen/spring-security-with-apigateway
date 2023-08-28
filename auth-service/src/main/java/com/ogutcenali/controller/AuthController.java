@@ -6,6 +6,7 @@ import com.ogutcenali.service.AuthService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.jmx.export.annotation.ManagedOperation;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -25,5 +26,7 @@ public class AuthController {
     public ResponseEntity<AuthResponse> login(@RequestBody AuthRequest request) {
         return ResponseEntity.ok(authService.login(request));
     }
+
+
 
 }
