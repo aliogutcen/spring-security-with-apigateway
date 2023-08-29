@@ -20,16 +20,19 @@ public class ActivationCodeService {
 
     private final IActivationCodeRepository activationCodeRepository;
     private final AuthService authService;
+    private final MailService mailService;
 
-    public ActivationCodeService(IActivationCodeRepository activationCodeRepository, @Lazy AuthService authService) {
+    public ActivationCodeService(IActivationCodeRepository activationCodeRepository, @Lazy AuthService authService, MailService mailService) {
         this.activationCodeRepository = activationCodeRepository;
         this.authService = authService;
+        this.mailService = mailService;
     }
 
     @Transactional
     public void generateActivationCode(String email) {
+        String code = generateCode();
         ActivationCode activationCode = ActivationCode.builder()
-                .code(generateCode())
+                .code(code)
                 .expirationCode(calculateExpirationTime())
                 .isUsed(false)
                 .email(email)
@@ -37,6 +40,7 @@ public class ActivationCodeService {
                 .createdBy(ERole.ADMIN)
                 .build();
         activationCodeRepository.save(activationCode);
+        mailService.activationCodeSendEmail(email, code);
     }
 
     @Transactional
@@ -45,6 +49,7 @@ public class ActivationCodeService {
         checkExpiredCodeTime(activationCode);
         checkActivationCodeMatching(activationCode, request.getCode());
         isUseCodeBefore(activationCode);
+
         activationCode.setUsed(true);
         activationCode.setLastModifiedDate(LocalDateTime.now());
         activationCodeRepository.save(activationCode);
@@ -58,7 +63,6 @@ public class ActivationCodeService {
         if (activationCode.isUsed())
             throw new ActivationCodeAlreadyUsedException("Activation code already used!!!");
     }
-
 
     protected String generateCode() {
         return UUID.randomUUID().toString().substring(0, 5);

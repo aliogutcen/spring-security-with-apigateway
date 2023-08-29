@@ -22,6 +22,7 @@ ext {
 
             //
             lombok: "org.projectlombok:lombok:$versions.lombok",
+            emailSender: "org.springframework.boot:spring-boot-starter-mail:$versions.springBoot"
 
     ]
 }
