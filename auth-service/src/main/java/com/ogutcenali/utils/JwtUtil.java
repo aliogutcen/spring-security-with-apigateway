@@ -1,4 +1,4 @@
-package com.ogutcenali.service;
+package com.ogutcenali.utils;
 
 import com.ogutcenali.model.Auth;
 import io.jsonwebtoken.Claims;
@@ -71,6 +71,17 @@ public class JwtUtil {
 
     public Boolean validateToken(String token) {
         return !isTokenExpired(token);
+    }
+
+
+    public String activationToken(String email,String code){
+        Map<String, Object> claims = new HashMap<>();
+        claims.put("token",code);
+        claims.put("email",email);
+        return Jwts.builder().
+        setSubject(email)
+                .setClaims(claims)
+        .signWith(key).compact();
     }
 
 }

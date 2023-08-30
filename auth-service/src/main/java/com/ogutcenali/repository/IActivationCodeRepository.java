@@ -11,4 +11,6 @@ import java.util.UUID;
 public interface IActivationCodeRepository extends JpaRepository<ActivationCode, UUID> {
 
     Optional<ActivationCode> findOptionalByEmail(String email);
+
+
 }

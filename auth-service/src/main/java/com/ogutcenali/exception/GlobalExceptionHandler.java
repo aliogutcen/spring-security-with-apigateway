@@ -37,6 +37,14 @@ public class GlobalExceptionHandler {
         return new ResponseEntity<>(exceptionResponse, HttpStatus.CONFLICT);
     }
 
+    @ExceptionHandler({UserNotEnabledException.class})
+    public ResponseEntity<Object> handleUserAlreadyException(UserNotEnabledException exception,
+                                                             WebRequest webRequest) {
+        exceptionResponse.setMessage(exception.getMessage());
+        exceptionResponse.setDateTime(LocalDateTime.now());
+        return new ResponseEntity<>(exceptionResponse, HttpStatus.CONFLICT);
+    }
+
     @ExceptionHandler({ActivationCodeNotFoundException.class})
     public ResponseEntity<Object> handleActivationCodeNotFoundException(ActivationCodeNotFoundException exception,
                                                                         WebRequest request) {
@@ -61,6 +69,13 @@ public class GlobalExceptionHandler {
     }
     @ExceptionHandler({ActivationCodeAlreadyUsedException.class})
     public ResponseEntity<Object> handleActivationCodeNotFoundException(ActivationCodeAlreadyUsedException exception,
+                                                                        WebRequest request) {
+        exceptionResponse.setMessage(exception.getMessage());
+        exceptionResponse.setDateTime(LocalDateTime.now());
+        return new ResponseEntity<>(exceptionResponse, HttpStatus.CONFLICT);
+    }
+    @ExceptionHandler({PasswordNotMatchException.class})
+    public ResponseEntity<Object> handleActivationCodeNotFoundException(PasswordNotMatchException exception,
                                                                         WebRequest request) {
         exceptionResponse.setMessage(exception.getMessage());
         exceptionResponse.setDateTime(LocalDateTime.now());

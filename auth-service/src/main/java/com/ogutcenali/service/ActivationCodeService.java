@@ -7,6 +7,8 @@ import com.ogutcenali.exception.custom.ActivationCodeNotFoundException;
 import com.ogutcenali.model.ActivationCode;
 import com.ogutcenali.model.enums.ERole;
 import com.ogutcenali.repository.IActivationCodeRepository;
+import com.ogutcenali.utils.JwtUtil;
+import io.jsonwebtoken.Claims;
 import jakarta.transaction.Transactional;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
@@ -22,10 +24,13 @@ public class ActivationCodeService {
     private final AuthService authService;
     private final MailService mailService;
 
-    public ActivationCodeService(IActivationCodeRepository activationCodeRepository, @Lazy AuthService authService, MailService mailService) {
+    private final JwtUtil jwtUtil;
+
+    public ActivationCodeService(IActivationCodeRepository activationCodeRepository, @Lazy AuthService authService, MailService mailService, JwtUtil jwtUtil) {
         this.activationCodeRepository = activationCodeRepository;
         this.authService = authService;
         this.mailService = mailService;
+        this.jwtUtil = jwtUtil;
     }
 
     @Transactional
@@ -46,18 +51,31 @@ public class ActivationCodeService {
     @Transactional
     public void processActivationCodeForAccount(ActivationCodeRequest request) {
         ActivationCode activationCode = retrieveActivationCodeByEmail(request.getEmail());
+        processActivationCode(activationCode, request.getCode());
+    }
+
+    @Transactional
+    public void activationUserWithLink(String token) {
+        Claims claims = jwtUtil.getAllClaimsFromToken(token);
+        String email = claims.get("email").toString();
+        String code = claims.get("token").toString();
+        ActivationCode activationCode = retrieveActivationCodeByEmail(email);
+        processActivationCode(activationCode, code);
+    }
+
+    @Transactional
+    public void processActivationCode(ActivationCode activationCode, String code) {
         checkExpiredCodeTime(activationCode);
-        checkActivationCodeMatching(activationCode, request.getCode());
+        checkActivationCodeMatching(activationCode, code);
         isUseCodeBefore(activationCode);
 
         activationCode.setUsed(true);
         activationCode.setLastModifiedDate(LocalDateTime.now());
         activationCodeRepository.save(activationCode);
 
-        //activation code success and send auth service enabled true
         authService.successActivationAfterAuthEnabled(activationCode.getEmail());
-
     }
+
 
     protected void isUseCodeBefore(ActivationCode activationCode) {
         if (activationCode.isUsed())
@@ -91,5 +109,7 @@ public class ActivationCodeService {
             throw new ActivationCodeExpiredException("Activation code has expired.");
         }
     }
+
+
 }
 

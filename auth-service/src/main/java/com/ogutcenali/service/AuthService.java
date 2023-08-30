@@ -2,12 +2,15 @@ package com.ogutcenali.service;
 
 import com.ogutcenali.dto.request.AuthRequest;
 import com.ogutcenali.dto.response.AuthResponse;
+import com.ogutcenali.exception.custom.PasswordNotMatchException;
 import com.ogutcenali.exception.custom.UserAlreadyExistsException;
+import com.ogutcenali.exception.custom.UserNotEnabledException;
 import com.ogutcenali.exception.custom.UserNotFoundException;
 import com.ogutcenali.mapper.AuthMapper;
 import com.ogutcenali.model.Auth;
 import com.ogutcenali.model.enums.ERole;
 import com.ogutcenali.repository.IAuthRepository;
+import com.ogutcenali.utils.JwtUtil;
 import org.springframework.security.crypto.bcrypt.BCrypt;
 import org.springframework.stereotype.Service;
 
@@ -42,21 +45,27 @@ public class AuthService {
 
 
     }
-    public AuthResponse login(AuthRequest request) {
-        Optional<Auth> auth = authRepository.findByEmail(request.getEmail());
-        if (auth.isEmpty()) throw new RuntimeException("Auth does not found");
-        String accessToken = jwt.generate(auth.get(), "ACCESS");
-        String refreshToken = jwt.generate(auth.get(), "REFRESH");
 
+    public AuthResponse login(AuthRequest request) {
+
+        Auth auth = getAuthWithEmail(request.getEmail());
+        if (!auth.isEnabled())
+            throw new UserNotEnabledException("User is not enabled for login please activate with activate code");
+        if (!BCrypt.checkpw(request.getPassword(), auth.getPassword()))
+            throw new PasswordNotMatchException("Try your password again");
+
+        String accessToken = jwt.generate(auth, "ACCESS");
+        String refreshToken = jwt.generate(auth, "REFRESH");
         return AuthResponse.builder()
                 .refreshToken(refreshToken)
                 .accessToken(accessToken)
                 .build();
     }
+
+
     public String generateBCryptPassword(String password) {
         return BCrypt.hashpw(password, BCrypt.gensalt());
     }
-
 
     public void successActivationAfterAuthEnabled(String email) {
         Auth auth = getAuthWithEmail(email);
@@ -65,6 +74,7 @@ public class AuthService {
         auth.setLastModifiedBy(ERole.ADMIN);
         authRepository.save(auth);
     }
+
     protected Auth getAuthWithEmail(String email) {
         Optional<Auth> auth = authRepository.findByEmail(email);
         if (auth.isEmpty()) {
